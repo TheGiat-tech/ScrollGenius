@@ -1,16 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 
-type Payload = {
-  ga4MeasurementId: string;
-  eventName: string;
-  thresholds: string;
-  selectors: string;
-  spaFix: boolean;
-  ajaxForms: boolean;
-  premium: boolean;
-};
-
 const defaultThresholds = "25,50,75,100";
 
 export default function Page() {
@@ -28,14 +18,14 @@ export default function Page() {
   const [spaFix, setSpaFix] = useState(true);
   const [ajaxForms, setAjaxForms] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [toast, setToast] = useState<string>("");
+  const [toast, setToast] = useState("");
 
   const canGenerate = useMemo(
     () => ga4Id.trim().length > 0 && eventName.trim().length > 0,
     [ga4Id, eventName]
   );
 
-  const doUnlock = (code: string) => {
+  const doUnlock = (code) => {
     if (code.trim().toUpperCase() === "DEMO-PRO") {
       setPremium(true);
       localStorage.setItem("sg_premium", "1");
@@ -48,7 +38,7 @@ export default function Page() {
     }
   };
 
-  const download = (data: any, filename = "ScrollGenius_Container.json") => {
+  const download = (data, filename = "ScrollGenius_Container.json") => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -60,7 +50,7 @@ export default function Page() {
     if (!canGenerate || busy) return;
     setBusy(true);
     try {
-      const payload: Payload = {
+      const payload = {
         ga4MeasurementId: ga4Id.trim(),
         eventName: eventName.trim(),
         thresholds: premium ? (thresholds.trim() || defaultThresholds) : defaultThresholds,
@@ -74,7 +64,7 @@ export default function Page() {
       const json = await res.json();
       download(json);
       setToast("✅ GTM container generated");
-    } catch (e:any) {
+    } catch (e) {
       setToast("❌ " + (e.message || "Error"));
     } finally {
       setBusy(false);
@@ -182,7 +172,7 @@ export default function Page() {
   );
 }
 
-function UnlockForm({ onUnlock }:{ onUnlock:(code:string)=>void }) {
+function UnlockForm({ onUnlock }) {
   const [code, setCode] = useState("");
   return (
     <div style={{display:'flex', gap:8, marginTop:8}}>
