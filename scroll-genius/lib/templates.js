@@ -8,7 +8,7 @@
  *  {{SELECTORS}}  -> "#footer, .cookie"
  *  {{SPAFIX}}     -> "true" | "false"
  */
-export const CORE_LISTENER_HTML = (thresholdsCSV:string, selectorsCSV:string, spaFix:boolean) => `
+export const CORE_LISTENER_HTML = (thresholdsCSV, selectorsCSV, spaFix) => `
 <script>
 (function(){
   var THRESHOLDS = (${JSON.stringify(thresholdsCSV)} || "25,50,75,100")

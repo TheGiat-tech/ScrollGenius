@@ -2,18 +2,20 @@ import { CORE_LISTENER_HTML, AJAX_LISTENER_HTML } from "./templates";
 
 /** A tiny ID generator for GTM objects (stable per run) */
 const idBase = Date.now().toString().slice(-6);
-const mkId = (n:number) => String(Number(idBase) + n);
+const mkId = (n) => String(Number(idBase) + n);
 
-/** Build a minimal-yet-valid GTM container JSON (exportFormatVersion:2) */
-export function buildContainer(opts: {
-  ga4Id: string;
-  eventName: string;
-  thresholds: string;
-  selectors: string;
-  spaFix: boolean;
-  ajaxForms: boolean;
-  premium: boolean;
-}) {
+/**
+ * Build a minimal-yet-valid GTM container JSON (exportFormatVersion:2)
+ * @param {Object} opts
+ * @param {string} opts.ga4Id
+ * @param {string} opts.eventName
+ * @param {string} opts.thresholds
+ * @param {string} opts.selectors
+ * @param {boolean} opts.spaFix
+ * @param {boolean} opts.ajaxForms
+ * @param {boolean} opts.premium
+ */
+export function buildContainer(opts) {
   const TR_INIT = mkId(1);        // DOM Ready trigger for core HTML
   const TR_CEVT = mkId(2);        // Custom event trigger (scroll thresholds)
   const TR_FORM = mkId(3);        // Custom event trigger (form success)
@@ -28,7 +30,7 @@ export function buildContainer(opts: {
   const exportFormatVersion = 2;
 
   // ---- TRIGGERS ----
-  const triggers:any[] = [
+  const triggers = [
     {
       "triggerId": TR_INIT,
       "name": "ScrollGenius – Init (DOM Ready)",
@@ -59,7 +61,7 @@ export function buildContainer(opts: {
   }
 
   // ---- VARIABLES ----
-  const variables:any[] = [
+  const variables = [
     {
       "variableId": VAR_SCROLL_PERCENT,
       "name": "DL – scroll_percent",
@@ -83,7 +85,7 @@ export function buildContainer(opts: {
   }
 
   // ---- TAGS ----
-  const tags:any[] = [
+  const tags = [
     // 1) Core Custom HTML listener (fires once on DOM_READY)
     {
       "tagId": T_HTML_CORE,
@@ -132,7 +134,7 @@ export function buildContainer(opts: {
   }
 
   // ---- CONTAINER WRAP ----
-  const container:any = {
+  const container = {
     "exportFormatVersion": exportFormatVersion,
     "containerVersion": {
       "tag": tags,
@@ -148,7 +150,7 @@ export function buildContainer(opts: {
 
   // Free mode guard: when not premium, always strip selectors and force default thresholds inside the HTML tag.
   if (!opts.premium) {
-    const htmlTag = container.containerVersion.tag.find((t:any)=>t.tagId===T_HTML_CORE);
+    const htmlTag = container.containerVersion.tag.find((t)=>t.tagId===T_HTML_CORE);
     if (htmlTag) {
       htmlTag.parameter[0].value = CORE_LISTENER_HTML("25,50,75,100", "", opts.spaFix).replace(/\n/g," ");
     }
